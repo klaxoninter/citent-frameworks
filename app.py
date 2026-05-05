@@ -72,20 +72,35 @@ def make_filename(company, save_name, default_prefix, ext):
 
 
 # ============================================================
-# 커스텀 CSS (다크 테마 + 빨간 포인트)
+# 커스텀 CSS (화이트 사이드바 + 다크 메인 + 빨간 포인트 = 투톤)
 # ============================================================
 st.markdown("""
 <style>
-    /* 전체 다크 배경 */
+    /* 메인 콘텐츠 영역 - 다크 유지 */
     .stApp {
         background-color: #0e1117;
     }
-    /* 사이드바 */
+    /* 사이드바 - 화이트 테마 */
     [data-testid="stSidebar"] {
-        background-color: #0a0d12;
-        border-right: 1px solid #1f2937;
+        background-color: #ffffff;
+        border-right: 1px solid #e5e7eb;
     }
-    /* 카드형 컨테이너 느낌 */
+    /* 사이드바 모든 텍스트 - 진회색 (단, 버튼 글씨는 제외) */
+    [data-testid="stSidebar"] *:not(button):not(button *) {
+        color: #1f2937;
+    }
+    /* 사이드바 입력 필드 배경 - 라이트 그레이 */
+    [data-testid="stSidebar"] input,
+    [data-testid="stSidebar"] textarea {
+        background-color: #f3f4f6 !important;
+        color: #1f2937 !important;
+        border: 1px solid #d1d5db !important;
+    }
+    /* 사이드바 라디오 메뉴 강조 */
+    [data-testid="stSidebar"] [role="radiogroup"] label {
+        color: #374151;
+    }
+    /* 메인 영역 카드형 컨테이너 */
     .frame-card {
         background-color: #131720;
         border: 1px solid #1f2937;
@@ -93,23 +108,19 @@ st.markdown("""
         padding: 24px;
         margin-bottom: 16px;
     }
-    /* 빨간 버튼 */
+    /* 빨간 버튼 (메인 + 사이드바 공통) */
     .stButton > button[kind="primary"] {
         background-color: #dc2626;
-        color: white;
+        color: white !important;
         border: none;
         font-weight: 600;
     }
     .stButton > button[kind="primary"]:hover {
         background-color: #b91c1c;
     }
-    /* 헤더 강조 */
-    h1, h2, h3 {
+    /* 메인 영역 헤더 */
+    .stApp h1, .stApp h2, .stApp h3 {
         color: #f3f4f6;
-    }
-    /* 메뉴 라디오 라벨 */
-    [data-testid="stSidebar"] label {
-        color: #d1d5db;
     }
     /* 성공 메시지 박스 */
     div[data-testid="stAlertContainer"] {
@@ -123,7 +134,11 @@ st.markdown("""
 # 사이드바: 브랜드 + 메뉴 + 인증
 # ============================================================
 with st.sidebar:
-    st.markdown("### CI TENT")
+    # 로고 이미지 (logo.png가 같은 폴더에 있으면 표시, 없으면 텍스트로 폴백)
+    if os.path.exists("logo.png"):
+        st.image("logo.png", use_container_width=True)
+    else:
+        st.markdown("### CI TENT")
     st.markdown("**FRAME WORKS**")
     st.caption("씨아이텐트 통합 자재 산출 및 도면 시스템")
     st.divider()
@@ -160,7 +175,7 @@ with st.sidebar:
         "막기 위해 사용자 인증을 진행하고 있습니다. 전문가용 도구이므로 실제 "
         "현업 종사자분들께만 비밀번호를 안내해 드립니다."
     )
-    st.caption("특허 출원번호: 10-2026-0076694")
+    st.caption("특허 출원 진행 중")
     st.divider()
     st.markdown("**[고객지원 및 기술문의]**")
     st.caption("제조원: 씨아이텐트(CI TENT)")
