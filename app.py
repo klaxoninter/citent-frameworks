@@ -107,7 +107,7 @@ st.markdown("""
 # 사이드바: 브랜드 + 메뉴 + 인증
 # ============================================================
 with st.sidebar:
-    st.markdown("### CI TENT")
+    st.image("logo.png", use_container_width=True)
     st.markdown("**FRAME WORKS**")
     st.caption("씨아이텐트 통합 자재 산출 및 도면 시스템")
     st.divider()
