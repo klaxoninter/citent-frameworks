@@ -55,6 +55,22 @@ def setup_korean_font():
 
 setup_korean_font()
 
+
+# ============================================================
+# 다운로드 파일명 생성 헬퍼 (업체명 + 저장파일명 조합)
+# ============================================================
+def make_filename(company, save_name, default_prefix, ext):
+    parts = []
+    if company and company.strip():
+        parts.append(company.strip())
+    if save_name and save_name.strip():
+        parts.append(save_name.strip())
+    if not parts:
+        parts.append(default_prefix)
+    safe = "_".join(parts).replace(" ", "_").replace("/", "-")
+    return f"{safe}.{ext}"
+
+
 # ============================================================
 # 커스텀 CSS (다크 테마 + 빨간 포인트)
 # ============================================================
@@ -107,7 +123,7 @@ st.markdown("""
 # 사이드바: 브랜드 + 메뉴 + 인증
 # ============================================================
 with st.sidebar:
-    st.image("logo.png", use_container_width=True)
+    st.markdown("### CI TENT")
     st.markdown("**FRAME WORKS**")
     st.caption("씨아이텐트 통합 자재 산출 및 도면 시스템")
     st.divider()
@@ -144,7 +160,7 @@ with st.sidebar:
         "막기 위해 사용자 인증을 진행하고 있습니다. 전문가용 도구이므로 실제 "
         "현업 종사자분들께만 비밀번호를 안내해 드립니다."
     )
-    st.caption("특허 출원 진행 중")
+    st.caption("특허 출원번호: 10-2026-0076694")
     st.divider()
     st.markdown("**[고객지원 및 기술문의]**")
     st.caption("제조원: 씨아이텐트(CI TENT)")
@@ -332,25 +348,33 @@ def module_1_truss():
             st.table(data)
 
         st.markdown("#### 📥 도면 파일 다운로드 (PDF / 엑셀 / CAD)")
+
+        # 업체명 / 저장 파일명 입력
+        col_cn, col_fn = st.columns(2)
+        with col_cn:
+            company_1 = st.text_input("업체명", placeholder="예: 씨아이텐트", key="company_truss")
+        with col_fn:
+            savename_1 = st.text_input("저장 파일명", placeholder="예: 물류센터_A동", key="savename_truss")
+
         c1, c2, c3 = st.columns(3)
         with c1:
             buf = io.BytesIO()
             fig.savefig(buf, format="pdf", bbox_inches="tight")
             st.download_button("📄 PDF 도면 다운로드", buf.getvalue(),
-                               file_name=f"citent_truss_{int(span_cm)}.pdf",
+                               file_name=make_filename(company_1, savename_1, f"citent_truss_{int(span_cm)}", "pdf"),
                                mime="application/pdf", use_container_width=True,
                                disabled=not st.session_state.get("authed", False))
         with c2:
             csv_data = f"항목,값\n전체스판(mm),{geom['span_mm']}\n등분수,{len(geom['x_positions'])-1}\n상현빗변(mm),{geom['top_chord_half_mm']:.1f}\n각도(deg),{geom['angle_deg']:.2f}\n"
             st.download_button("📊 엑셀 산출표 다운로드", csv_data.encode("utf-8-sig"),
-                               file_name=f"citent_truss_{int(span_cm)}.csv",
+                               file_name=make_filename(company_1, savename_1, f"citent_truss_{int(span_cm)}", "csv"),
                                mime="text/csv", use_container_width=True,
                                disabled=not st.session_state.get("authed", False))
         with c3:
             buf2 = io.BytesIO()
             fig.savefig(buf2, format="svg", bbox_inches="tight")
             st.download_button("📐 CAD(SVG) 도면 다운로드", buf2.getvalue(),
-                               file_name=f"citent_truss_{int(span_cm)}.svg",
+                               file_name=make_filename(company_1, savename_1, f"citent_truss_{int(span_cm)}", "svg"),
                                mime="image/svg+xml", use_container_width=True,
                                disabled=not st.session_state.get("authed", False))
 
@@ -709,13 +733,21 @@ def module_4_diagonal():
         st.pyplot(fig, use_container_width=True)
 
         st.markdown("#### 도면 파일 다운로드 (PDF / 엑셀 / CAD)")
+
+        # 업체명 / 저장 파일명 입력
+        col_cn, col_fn = st.columns(2)
+        with col_cn:
+            company_4 = st.text_input("업체명", placeholder="예: 씨아이텐트", key="company_diag")
+        with col_fn:
+            savename_4 = st.text_input("저장 파일명", placeholder="예: 물류센터_A동", key="savename_diag")
+
         c1, c2, c3 = st.columns(3)
         authed = st.session_state.get("authed", False)
         with c1:
             buf = io.BytesIO()
             fig.savefig(buf, format="pdf", bbox_inches="tight")
             st.download_button("📄 PDF 도면 다운로드", buf.getvalue(),
-                               file_name="citent_diagonal_ladder.pdf",
+                               file_name=make_filename(company_4, savename_4, "citent_diagonal_ladder", "pdf"),
                                mime="application/pdf", use_container_width=True,
                                disabled=not authed)
         with c2:
@@ -726,14 +758,14 @@ def module_4_diagonal():
                 f"큰칸세그(mm),{g['big_seg']:.1f}\n작은칸세그(mm),{g['small_seg']:.1f}\n"
             )
             st.download_button("📊 엑셀 산출표 다운로드", csv_data.encode("utf-8-sig"),
-                               file_name="citent_diagonal_ladder.csv",
+                               file_name=make_filename(company_4, savename_4, "citent_diagonal_ladder", "csv"),
                                mime="text/csv", use_container_width=True,
                                disabled=not authed)
         with c3:
             buf2 = io.BytesIO()
             fig.savefig(buf2, format="svg", bbox_inches="tight")
             st.download_button("📐 CAD(SVG) 도면 다운로드", buf2.getvalue(),
-                               file_name="citent_diagonal_ladder.svg",
+                               file_name=make_filename(company_4, savename_4, "citent_diagonal_ladder", "svg"),
                                mime="image/svg+xml", use_container_width=True,
                                disabled=not authed)
 
